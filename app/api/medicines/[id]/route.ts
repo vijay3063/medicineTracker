@@ -2,12 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { updateMedicine, deleteMedicine } from '@/lib/database';
 import { verifyToken } from '@/lib/auth';
 
-// ✅ Use Next.js RouteContext type
-interface RouteContext {
-  params: { id: string };
-}
-
-export async function PUT(request: NextRequest, context: RouteContext) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     const token = request.headers.get('authorization')?.replace('Bearer ', '');
     if (!token) {
@@ -20,7 +18,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     }
 
     const body = await request.json();
-    const medicine = await updateMedicine(context.params.id, body);
+    const medicine = await updateMedicine(params.id, body);
     return NextResponse.json(medicine);
   } catch (error) {
     console.error('Update medicine error:', error);
@@ -31,7 +29,10 @@ export async function PUT(request: NextRequest, context: RouteContext) {
   }
 }
 
-export async function DELETE(request: NextRequest, context: RouteContext) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     const token = request.headers.get('authorization')?.replace('Bearer ', '');
     if (!token) {
@@ -43,7 +44,7 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
-    await deleteMedicine(context.params.id);
+    await deleteMedicine(params.id);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Delete medicine error:', error);
