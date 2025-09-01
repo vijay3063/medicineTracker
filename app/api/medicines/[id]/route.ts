@@ -2,10 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { updateMedicine, deleteMedicine } from '@/lib/database';
 import { verifyToken } from '@/lib/auth';
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+// ✅ Use Next.js RouteContext type
+interface RouteContext {
+  params: { id: string };
+}
+
+export async function PUT(request: NextRequest, context: RouteContext) {
   try {
     const token = request.headers.get('authorization')?.replace('Bearer ', '');
     if (!token) {
@@ -18,9 +20,8 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const medicine = await updateMedicine(params.id, body);
+    const medicine = await updateMedicine(context.params.id, body);
     return NextResponse.json(medicine);
-
   } catch (error) {
     console.error('Update medicine error:', error);
     return NextResponse.json(
@@ -30,10 +31,7 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, context: RouteContext) {
   try {
     const token = request.headers.get('authorization')?.replace('Bearer ', '');
     if (!token) {
@@ -45,9 +43,8 @@ export async function DELETE(
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
-    await deleteMedicine(params.id);
+    await deleteMedicine(context.params.id);
     return NextResponse.json({ success: true });
-
   } catch (error) {
     console.error('Delete medicine error:', error);
     return NextResponse.json(
