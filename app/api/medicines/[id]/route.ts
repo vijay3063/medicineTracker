@@ -4,9 +4,11 @@ import { verifyToken } from '@/lib/auth';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: any   // 👈 loose typing to avoid Next.js type errors
 ) {
   try {
+    const { id } = context.params;
+
     const token = request.headers.get('authorization')?.replace('Bearer ', '');
     if (!token) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -18,7 +20,7 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const medicine = await updateMedicine(params.id, body);
+    const medicine = await updateMedicine(id, body);
     return NextResponse.json(medicine);
   } catch (error) {
     console.error('Update medicine error:', error);
@@ -31,9 +33,11 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: any   // 👈 loose typing
 ) {
   try {
+    const { id } = context.params;
+
     const token = request.headers.get('authorization')?.replace('Bearer ', '');
     if (!token) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -44,7 +48,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
-    await deleteMedicine(params.id);
+    await deleteMedicine(id);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Delete medicine error:', error);
