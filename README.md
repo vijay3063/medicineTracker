@@ -1,4 +1,4 @@
-# MedPal - Healthcare Management Platform
+# Medicine Remainder - Healthcare Management Platform
 
 A comprehensive full-stack healthcare management application built with Next.js, featuring medicine reminders, health tracking, and automated notifications via Twilio SMS and email.
 
